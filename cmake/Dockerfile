@@ -1,16 +1,13 @@
 # syntax=docker/dockerfile:1
-FROM debian:11
+FROM fedora:34
 
 # Install `build-essential` tools
-RUN apt-get update
-RUN apt-get -y install \
-    build-essential \
-    libssl-dev \
-    wget
+RUN dnf -y update
+RUN dnf -y install \
+    make automake gcc g++ openssl-devel wget
 
 # Remove any older versions of `cmake`
-RUN apt-get remove --purge cmake && \
-    hash -r
+RUN dnf -y remove cmake
 
 # Download CMake source files
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.22.1/cmake-3.22.1.tar.gz
