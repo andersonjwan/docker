@@ -1,26 +1,43 @@
-# syntax=docker/dockerfile:1
-FROM mathworks/matlab:r2021b
-USER root
+ARG MATLAB_RELEASE=r2022a
+FROM mathworks/matlab-deps:${MATLAB_RELEASE}
 
-# Update and install required packages
-RUN apt-get update && \
-    apt-get install -y \
-    gcc g++
+ARG MATLAB_RELEASE
 
-# Post-update/install cleanup
-RUN apt-get clean && \
-    apt-get -y autoremove && \
-    rm -rf /var/lib/apt/lists/*
+# Install packages.
+# This includes package dependencies for MPM and MEX-based support
+# for Mathworks.
+RUN export DEBIAN_FRONTEND=noninteractive && apt-get update && \
+    apt-get install --no-install-recommends --yes \
+        gcc g++ \
+        git-svn \
+        wget \
+        unzip \
+        ca-certificates && \
+    apt-get clean && apt-get autoremove
 
-# Create home directory and give permissions
-RUN mkdir -p /home/matlab/workspace/
-WORKDIR /home/matlab/workspace/
+# Install MATLAB products.
+# Using MPM, the set of MATLAB products are defined from the --products flag.
+RUN wget -q https://www.mathworks.com/mpm/glnxa64/mpm && \
+    chmod +x mpm && \
+    ./mpm install \
+        --release=${MATLAB_RELEASE} \
+        --destination=/opt/matlab \
+        --products MATLAB Simulink && \
+    rm -f mpm /tmp/mathworks_root.log && \
+    ln -s /opt/matlab/bin/matlab /usr/local/bin/matlab
 
-RUN chown -R matlab:matlab /home/matlab && \
-    chmod 777 /home/matlab
+# Create a MATLAB user.
+# The default $USER name of the OS.
+RUN adduser --shell /bin/bash --disabled-password --gecos "" matlab && \
+    echo "matlab ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/matlab && \
+    chmod 0440 /etc/sudoers.d/matlab
 
-# Switch to non-root user
+# Mathworks Docker usage reporting options.
+# Disabled by default. Set MW_DDUX_FORCE_ENABLE to true to send diagnostics
+# and usage reports.
+ENV MW_DDUX_FORCE_ENABLE=false MW_CONTEXT_TAGS=MATLAB:DOCKERFILE:V1
+
+# Setup instance.
 USER matlab
-
-ENTRYPOINT ["/bin/run.sh"]
-CMD []
+WORKDIR /home/matlab/
+ENTRYPOINT ["matlab"]
