@@ -2,7 +2,8 @@
 FROM alpine:latest
 
 # Install Clang tools
-RUN apk add --no-cache \
-    clang-extra-tools
+RUN apk update && \
+    apk add --no-cache \
+        clang-extra-tools
 
 CMD ["/bin/sh"]
