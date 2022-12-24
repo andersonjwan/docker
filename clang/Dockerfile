@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM alpine:latest
+FROM andersonjwan/devel:latest
 
 # Install Clang tools
 RUN apk update && \
