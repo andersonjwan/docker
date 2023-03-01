@@ -9,7 +9,8 @@ RUN apk update && \
         curl \
         openjdk17 \
         python3 \
-        clang-extra-tools
+        clang-extra-tools \
+        libstdc++6
 
 # Install ANTLR tool
 RUN curl -L -O https://raw.githubusercontent.com/antlr/website-antlr4/gh-pages/download/antlr-4.11.1-complete.jar --output-dir /usr/local/bin && \
