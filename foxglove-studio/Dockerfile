@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM ubuntu:latest
+FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
     wget \
@@ -7,10 +7,10 @@ RUN apt-get update && apt-get install -y \
     nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://github.com/foxglove/studio/releases/download/v1.83.1/foxglove-studio-1.83.1-linux-amd64.deb \
+RUN wget https://get.foxglove.dev/desktop/latest/foxglove-studio-2.7.0-linux-amd64.deb \
     && apt-get update && apt-get install -y \
-    ./foxglove-studio-1.83.1-linux-amd64.deb \
-    && rm foxglove-studio-1.83.1-linux-amd64.deb \
+    ./foxglove-studio-2.7.0-linux-amd64.deb \
+    && rm foxglove-studio-2.7.0-linux-amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
 CMD ["/bin/foxglove-studio", "--no-sandbox"]
