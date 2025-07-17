@@ -56,3 +56,12 @@ RUN export DEBIAN_FRONTEND="noninteractive" && \
     apt-get install --assume-yes ros-jazzy-desktop && \
     apt-get clean && \
     rm --recursive --force /var/cache/apt/archives /var/lib/apt/lists/*
+
+# Post-installation setup.
+#
+# Here we set up the appropriate source'ing of the bash scripts and any
+# additional tasks after installing ROS.
+COPY .bashrc /tmp/.bashrc
+RUN printf "\n" >> $HOME/.bashrc && \
+    cat /tmp/.bashrc >> $HOME/.bashrc && \
+    rm --force /tmp/.bashrc
