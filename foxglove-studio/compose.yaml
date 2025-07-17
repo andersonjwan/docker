@@ -7,17 +7,13 @@ services:
     tty: true
     environment:
       - DISPLAY=$DISPLAY
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    devices:
+      - /dev/dri:/dev/dri
+    group_add:
+      - video
+    runtime: nvidia
     network_mode: "host"
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: ["graphics", "utility", "display", "video", "compute"]
-
-networks:
-  ros-network:
-    name: ros-network
-    driver: bridge
